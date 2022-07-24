@@ -10,6 +10,9 @@ namespace Bussiness_logic.Interfaces
     public interface IBookService
     {
         Task<IEnumerable<BookDTO>> GetBooks(string order);
-        Task<BookDTO> GetBook(int id);
+        Task<IEnumerable<BookDTO>> GetRecomendedBooks(string genre);
+        Task<SingleBookDTO> GetBook(int id);
+        Task<bool> Delete(int id);
+        Task<int> Create(CreateBookDTO bookDTO);
     }
 }

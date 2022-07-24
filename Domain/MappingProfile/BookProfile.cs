@@ -13,9 +13,15 @@ namespace Domain.MappingProfile
     {
         public BookProfile()
         {
+            CreateMap<CreateBookDTO, Book>();
+
             CreateMap<Book, BookDTO>()
                 .ForMember(dest => dest.ReviewsNumber, opt => opt.MapFrom(src => src.Rewievs.Count))
-                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Ratings.Average(x=>x.Score)));
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Ratings.Count != 0 ? src.Ratings.Average(x => x.Score) : 0));
+
+            CreateMap<Book, SingleBookDTO>()
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Ratings.Count != 0 ? src.Ratings.Average(x => x.Score) : 0));
+
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Domain.DTOs
 {
     public enum SortOrder
     {
-        Ask,
+        Asc,
         Desc
     }
 }

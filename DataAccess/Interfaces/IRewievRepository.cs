@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Interfaces
 {
-    public interface IBookRepository: IGenericRepository<Book>
+    public interface IRewievRepository : IGenericRepository<Rewiev>
     {
-        //Task<IEnumerable<Book>> 
     }
 }

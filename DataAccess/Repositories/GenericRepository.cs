@@ -7,6 +7,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
+using Microsoft.EntityFrameworkCore.DynamicLinq;
 
 namespace DataAccess.Repositories
 {
@@ -31,22 +33,23 @@ namespace DataAccess.Repositories
         {
             return table.ToListAsync();
         }
-        public ValueTask<T> GetById(object id)
+        public Task<T> GetById(object id)
         {
-            return table.FindAsync(id);
+            return table.FindAsync(id).AsTask();
         }
-        public Task<T> GetByIdWithInclude(object id,params Expression<Func<T, object>>[] includes)
+        public Task<dynamic> GetByIdWithInclude(object id, params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = table;
             foreach (var include in includes)
             {
                 query = query.Include(include);
             }
-            return query.SingleOrDefaultAsync(x => x.GetType().GetProperty("Id") == id);
+
+            return query.FirstOrDefaultAsync($"c => c.Id == {id}");
         }
-        public async Task Insert(T obj)
+        public Task Insert(T obj)
         {
-            await table.AddAsync(obj);
+            return table.AddAsync(obj).AsTask();
         }
         public void Update(T obj)
         {
@@ -57,19 +60,20 @@ namespace DataAccess.Repositories
         {
             table.Remove(obj);
         }
-        public async Task Save()
+        public Task Save()
         {
-            await _context.SaveChangesAsync();
+            return _context.SaveChangesAsync();
         }
 
         public Task<List<T>> GetFiltered(SortingModel filteringModel, Expression<Func<T, bool>> filter = null,
-            Expression<Func<T, object>> include = null)
+            params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();
 
-            if (include != null)
+            foreach (var include in includes)
             {
                 query = query.Include(include);
+
             }
 
             if (filter != null)
@@ -77,20 +81,14 @@ namespace DataAccess.Repositories
                 query = query.Where(filter);
             }
 
-            var isCorrectProperty = typeof(T).GetProperties().Any(x => x.Name == filteringModel.Name);
-            if (filteringModel.SortOrder == SortOrder.Ask && isCorrectProperty)
+            if (filteringModel.Name != null)
             {
-                query = query.OrderBy(x => x.GetType().GetProperty(filteringModel.Name).GetValue(x));
-            }
-            else if (isCorrectProperty)
-            {
-                query = query.OrderByDescending(x => x.GetType().GetProperty(filteringModel.Name).GetValue(x));
+                query = query.OrderBy($"{filteringModel.Name} {filteringModel.SortOrder}");
             }
 
-            query = query.Skip(filteringModel.Page * filteringModel.Count);
             if (filteringModel.Count != 0)
             {
-                query = query.Take(filteringModel.Count);
+                query = query.Skip(filteringModel.Page * filteringModel.Count).Take(filteringModel.Count);
             }
 
             return query.ToListAsync();

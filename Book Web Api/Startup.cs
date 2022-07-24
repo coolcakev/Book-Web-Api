@@ -1,3 +1,6 @@
+using Book_Web_Api.Extension;
+using Book_Web_Api.Managers;
+using Book_Web_Api.Managers.Intrefaces;
 using Bussiness_logic.Interfaces;
 using Bussiness_logic.Services;
 using DataAccess;
@@ -6,6 +9,7 @@ using DataAccess.Repositories;
 using Domain.MappingProfile;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -39,14 +43,23 @@ namespace Book_Web_Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Book_Web_Api", Version = "v1" });
             });
+            services.AddSingleton<ILoggerManager, LoggerManager>();
             string connection = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<ApplicationContext>(options =>
               options.UseSqlServer(connection));
 
             services.AddAutoMapper(typeof(BookProfile));
+            services.AddAutoMapper(typeof(ReviewProfile));
+            services.AddAutoMapper(typeof(RatingProfile));
+
+            services.AddScoped<IRateService, RateService>();
             services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IRewievService, RewievService>();
+
             services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IRateRepository, RateRepository>();
+            services.AddScoped<IRewievRepository, RewievRepository>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         }
 
@@ -59,13 +72,15 @@ namespace Book_Web_Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book_Web_Api v1"));
             }
-
+         
+            app.UseExeptionHandle();
+            app.UseLogging();
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
-
+          
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

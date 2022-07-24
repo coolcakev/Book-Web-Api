@@ -12,10 +12,10 @@ namespace DataAccess.Interfaces
     {
         Task<List<T>> Get(Expression<Func<T, bool>> filter);
         Task<List<T>> GetFiltered(SortingModel filteringModel, Expression<Func<T, bool>> filter = null,
-             Expression<Func<T, object>> include = null);
+             params Expression<Func<T, object>>[] includes);
         Task<List<T>> GetAll();
-        ValueTask<T> GetById(object id);
-        Task<T> GetByIdWithInclude(object id, params Expression<Func<T, object>>[] include);
+        Task<T> GetById(object id);
+        Task<dynamic> GetByIdWithInclude(object id, params Expression<Func<T, object>>[] includes);
         Task Insert(T obj);
         void Update(T obj);
         void Delete(T obj);
