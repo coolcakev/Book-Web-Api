@@ -46,6 +46,14 @@ namespace Book_Web_Api
             services.AddSingleton<ILoggerManager, LoggerManager>();
             string connection = Configuration.GetConnectionString("DefaultConnection");
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "default",
+                                  policy =>
+                                  {
+                                      policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
+                                  });
+            });
             services.AddDbContext<ApplicationContext>(options =>
               options.UseSqlServer(connection));
 
@@ -78,7 +86,7 @@ namespace Book_Web_Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors("default");
             app.UseAuthorization();
           
             app.UseEndpoints(endpoints =>
