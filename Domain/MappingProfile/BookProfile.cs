@@ -20,7 +20,8 @@ namespace Domain.MappingProfile
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Ratings.Count != 0 ? src.Ratings.Average(x => x.Score) : 0));
 
             CreateMap<Book, SingleBookDTO>()
-                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Ratings.Count != 0 ? src.Ratings.Average(x => x.Score) : 0));
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Ratings.Count != 0 ? src.Ratings.Average(x => x.Score) : 0))
+            .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Rewievs));
 
         }
     }
