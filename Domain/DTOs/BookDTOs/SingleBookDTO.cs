@@ -15,6 +15,7 @@ namespace Domain.DTOs.BookDTOs
         public string Cover { get; set; }
         public string Content { get; set; }
         public decimal Rating { get; set; }
+        public string Gener { get; set; }
         public List<RewievDTO> Reviews { get; set; }
     }
 }

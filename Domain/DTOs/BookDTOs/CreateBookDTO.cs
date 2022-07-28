@@ -12,8 +12,7 @@ namespace Domain.DTOs.BookDTOs
         public int? Id { get; set; }
         [Required]
         public string Title { get; set; }
-        public string Cover { get; set; }
-        [Required]
+        public string Cover { get; set; } 
         public string Content { get; set; }
         [Required]
         public string Gener { get; set; }

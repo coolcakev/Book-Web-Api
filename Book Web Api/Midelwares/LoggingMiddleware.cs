@@ -30,6 +30,11 @@ namespace Book_Web_Api.Midelwares
             using (var mem = new MemoryStream())
             using (var reader = new StreamReader(mem))
             {
+                if (httpContext.Request.ContentType!=null&&httpContext.Request.ContentType.Contains("form-data"))
+                {
+                    await _next(httpContext);
+                    return;
+                }
                 await httpContext.Request.Body.CopyToAsync(mem);
                 httpContext.Request.Body = mem;
 
@@ -41,9 +46,6 @@ namespace Book_Web_Api.Midelwares
                 _logger.LogInfo($"Request Body : {body}");
                 await _next(httpContext);
             }
-
-
-
         }
 
 

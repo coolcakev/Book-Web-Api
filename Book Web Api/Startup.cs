@@ -61,6 +61,7 @@ namespace Book_Web_Api
             services.AddAutoMapper(typeof(ReviewProfile));
             services.AddAutoMapper(typeof(RatingProfile));
 
+            services.AddScoped<IFileService, FileService>();
             services.AddScoped<IRateService, RateService>();
             services.AddScoped<IBookService, BookService>();
             services.AddScoped<IRewievService, RewievService>();
@@ -84,7 +85,7 @@ namespace Book_Web_Api
             app.UseExeptionHandle();
             app.UseLogging();
             app.UseHttpsRedirection();
-
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseCors("default");
             app.UseAuthorization();
